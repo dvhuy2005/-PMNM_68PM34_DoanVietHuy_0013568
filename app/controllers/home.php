@@ -1,7 +1,19 @@
 <?php
-class home {
-    public function index() {
-        echo "<h1>Trang chủ đã chạy thành công qua URL Process!</h1>";
-    }
+class home
+{
+  public function index()
+  {
+    echo "Đây là trang chủ";
+  }
+
+  public function about()
+  {
+    echo "Đây là trang giới thiệu";
+  }
+  public function login()
+  {
+    require_once '../app/views/home/login.php';
+
+  }
 }
 ?>

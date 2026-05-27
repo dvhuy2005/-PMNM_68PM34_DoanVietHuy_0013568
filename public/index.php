@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<body>
-
 <?php
-echo "Hello World!";
-?> 
-
-</body>
-</html>
+require_once '../app/core/App.php';
+$myApp = new App();
+?>

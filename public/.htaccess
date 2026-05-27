@@ -1,0 +1,10 @@
+Options -Indexes
+Options +FollowSymLinks
+RewriteEngine On
+
+# Bỏ qua nếu người dùng đang truy cập trực tiếp vào một file hoặc thư mục có thật (như ảnh, css, js)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Đẩy tất cả các đường dẫn ảo về cho biến 'url' của file index.php
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
