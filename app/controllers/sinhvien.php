@@ -1,22 +1,51 @@
 <?php
 require_once '../app/core/Controller.php';
 
-class sinhvien extends Controller {
+class sinhvien extends Controller
+{
 
-    public function index()
+public function index()
     {
-        // 1. Gọi model 'sinhvienModel' làm việc
+        // 1. Khởi động session nếu hệ thống của bạn chưa bật tự động
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;   
+
+    
+        $current_page = is_numeric($page) ? (int) $page : 1;
+        if ($current_page < 1) {
+            $current_page = 1;
+        }
+
+        // 2. Xử lý logic lưu từ khóa tìm kiếm thông minh qua Session
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $search = $_POST['search'] ?? '';
+            $_SESSION['search_keyword'] = $search; 
+        } else {
+            $search = $_SESSION['search_keyword'] ?? '';
+        }
+
+        $limit = 5;
+        $offset = ($current_page - 1) * $limit;
+
         $sinhvienModel = $this->model('sinhvienModel');
+        $result = $sinhvienModel->paging($limit, $offset, $search);
+        
+        $sinhviens = $result['sinhviens'];
+        $total_page = $result['totalPage']; 
 
-        // 2. Chạy hàm lấy 22 sinh viên mồi dưới Database lên
-        $sinhviens = $sinhvienModel->getAllSinhVien();
+        $data = [
+            'sinhviens' => $sinhviens,
+            'totalPage' => $total_page,      
+            'current_page' => $current_page, 
+            'search' => $search, 
+            'viewname' => 'sinhvien/index',
+            'title' => 'Danh sách Sinh viên'
+        ];
 
-        // 3. Bắn cục dữ liệu sang file giao diện HTML/CSS để hiển thị
-        $this->view('layout/masterlayout', [
-            'title'     => 'Trang Danh Sách Sinh Viên', // Tiêu đề tab web
-            'viewname'  => 'sinhvien/index',           // Tên file con để nhúng vào giữa (chính là file app/views/sinhvien/index.php)
-            'sinhviens' => $sinhviens                 // Truyền dữ liệu để file con bốc ra dùng
-        ]);
+        $this->view('layout/masterlayout', $data);
     }
 
     public function create()
